@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="عرض تفاعلي لبحث متغيرات البحث ومصادر جمع البيانات — جامعة الجوف، كلية التربية">
+<title>متغيرات البحث ومصادر البيانات</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap">
+<style>
+body{margin:0}img{max-width:100%}
+:root{
+  --green:#0F5338; --green-deep:#0B3F2A; --green-tint:#E7F0EA; --green-line:#C9DBCF;
+  --gold:#C59B27; --gold-soft:#D4AF37; --gold-tint:#FBF4E0; --gold-ink:#8A6A12;
+  --navy:#1A365D; --navy-tint:#E8EEF6;
+  --ground:#F4F6F4; --card:#FFFFFF; --ink:#16241D; --muted:#56675D; --line:#DCE4DE;
+  --warn:#A3392F; --warn-tint:#F8E9E6;
+  --display:"Cairo","IBM Plex Sans Arabic","Segoe UI",Tahoma,sans-serif;
+  --body:"IBM Plex Sans Arabic","Segoe UI",Tahoma,"Noto Sans Arabic",sans-serif;
+  --r:10px;
+  --shadow:0 1px 2px rgba(11,63,42,.06),0 6px 18px rgba(11,63,42,.07);
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{background:var(--ground);color:var(--ink);font-family:var(--body);font-size:clamp(15px,1.05vw + 6px,18px);line-height:1.8}
+.app{height:100%;display:grid;grid-template-rows:auto 1fr auto}
+button,select,input{font-family:inherit;font-size:inherit}
+:focus-visible{outline:3px solid var(--gold-soft);outline-offset:2px}
+
+/* ---------- top bar ---------- */
+.topbar{background:var(--green-deep);color:#EAF2EC;display:flex;align-items:center;gap:12px;padding:10px max(16px,2.4vw);border-bottom:2px solid var(--gold)}
+.brand{display:flex;align-items:center;gap:10px;min-width:0;flex:1}
+.tb-logo{flex:none;background:#fff;border-radius:7px;padding:4px 8px;display:flex}.tb-logo img{height:28px;width:auto;display:block}
+.brand-txt{display:flex;flex-direction:column;line-height:1.35;min-width:0}
+.brand-txt b{font-family:var(--display);font-weight:700;font-size:.95em;color:#fff}
+.brand-txt span{font-size:.74em;color:#B9CFC1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tb-btn{display:inline-flex;align-items:center;gap:6px;background:transparent;color:#F3E6BF;border:1px solid rgba(212,175,55,.45);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:.82em;white-space:nowrap}
+.tb-btn:hover{background:rgba(212,175,55,.14)}
+@media (max-width:620px){.tb-btn .lbl{display:none}.brand-txt span{display:none}}
+
+/* ---------- stage ---------- */
+.stage{position:relative;overflow:hidden}
+.slide{position:absolute;inset:0;overflow-y:auto;padding-block:clamp(22px,4.5vh,52px) 40px;padding-inline:max(16px,4.5vw);display:none}
+.slide.active{display:block;animation:enter .45s ease both}
+@keyframes enter{from{opacity:.001;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.slide.active{animation:none}}
+.inner{max-width:1180px;margin-inline:auto;display:flex;flex-direction:column;gap:clamp(16px,2.4vh,26px)}
+
+.eyebrow{font-size:.78em;font-weight:600;color:var(--gold-ink);letter-spacing:.02em;display:flex;align-items:center;gap:10px}
+.eyebrow::after{content:"";height:1px;flex:0 0 56px;background:var(--gold)}
+h2.st{font-family:var(--display);font-weight:800;font-size:clamp(1.45em,2.3vw,2.15em);line-height:1.35;margin:4px 0 0;color:var(--green-deep);text-wrap:balance}
+.lede{margin:0;color:var(--muted);max-width:72ch}
+h3{font-family:var(--display);font-weight:700;font-size:1.08em;margin:0 0 6px;color:var(--green);line-height:1.5}
+p{margin:0}
+.en{font-family:var(--body);direction:ltr;unicode-bidi:isolate;font-size:.86em;color:var(--navy);font-weight:500}
+.cite{font-size:.8em;color:var(--muted)}
+.cite::before{content:"— "}
+
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(min(100%,270px),1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:8px}
+.plain{padding:4px 0}
+.tag{display:inline-flex;align-items:center;gap:6px;font-size:.74em;font-weight:600;padding:2px 10px;border-radius:999px;background:var(--green-tint);color:var(--green);width:fit-content;white-space:nowrap}
+.tag.gold{background:var(--gold-tint);color:var(--gold-ink)}
+.tag.navy{background:var(--navy-tint);color:var(--navy)}
+.tag.warn{background:var(--warn-tint);color:var(--warn)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--green-line);background:var(--card);border-radius:999px;padding:3px 12px;font-size:.84em;color:var(--ink)}
+.note{border:1px solid #EAD9A6;background:var(--gold-tint);border-radius:var(--r);padding:14px 18px;display:flex;gap:12px;align-items:flex-start}
+.note svg{flex:none;margin-top:4px}
+.quote{border-inline-start:3px solid var(--gold);padding-inline-start:14px}
+ul.clean{margin:0;padding-inline-start:1.2em;display:flex;flex-direction:column;gap:4px}
+ul.clean li::marker{color:var(--gold)}
+
+/* tables */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--card);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:.88em}
+caption{caption-side:top;text-align:start;padding:10px 16px;font-family:var(--display);font-weight:700;color:var(--green-deep);border-bottom:1px solid var(--line);background:#FAFBFA}
+th,td{padding:10px 14px;text-align:start;vertical-align:top;border-bottom:1px solid var(--line)}
+thead th{background:var(--green);color:#fff;font-weight:600;font-family:var(--display);white-space:nowrap}
+tbody th{color:var(--green-deep);font-weight:700;white-space:nowrap;background:#FAFBFA}
+tbody tr:last-child>*{border-bottom:0}
+tbody tr:hover>*{background:var(--gold-tint)}
+.ok{color:var(--green);font-weight:700}
+.no{color:#A9B5AE}
+
+/* tabs */
+.tabs{display:flex;flex-direction:column;gap:14px}
+.tablist{display:flex;flex-wrap:wrap;gap:6px;border-bottom:1px solid var(--line);padding-bottom:8px}
+.tablist [role=tab]{background:transparent;border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:6px 14px;cursor:pointer;font-weight:500}
+.tablist [role=tab]:hover{border-color:var(--gold)}
+.tablist [role=tab][aria-selected=true]{background:var(--green);color:#fff;border-color:var(--green)}
+.tablist [role=tab] small{opacity:.75;font-size:.78em;margin-inline-start:4px}
+
+/* cover */
+.slide.cover{background:var(--green-deep) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='84' height='84'%3E%3Cg fill='none' stroke='%23C59B27' stroke-opacity='.16' stroke-width='1'%3E%3Crect x='24' y='24' width='36' height='36'/%3E%3Crect x='24' y='24' width='36' height='36' transform='rotate(45 42 42)'/%3E%3Ccircle cx='42' cy='42' r='6'/%3E%3C/g%3E%3C/svg%3E");color:#EAF2EC}
+.cover .inner{min-height:100%;justify-content:center;align-items:center;text-align:center;gap:clamp(10px,1.8vh,20px)}
+.logo-card{background:#FFFFFF;border-radius:14px;padding:12px 24px;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+.logo-card img{display:block;height:clamp(48px,7.5vh,76px);width:auto;max-width:100%}
+.cover-org{display:flex;flex-direction:column;gap:2px;font-size:.9em;color:#CFE0D5;align-items:center}
+.cover-org b{font-family:var(--display);color:var(--gold-soft);font-size:1.05em;letter-spacing:.01em}
+.cover-title{display:flex;flex-direction:column;align-items:center;gap:10px}
+.cover h1{font-family:var(--display);font-weight:800;font-size:clamp(1.9em,4.4vw,3.4em);line-height:1.25;margin:0;color:#fff;text-wrap:balance}
+.cover .sub{max-width:60ch;color:#D8E6DC;font-size:1.02em;text-wrap:balance}
+.cover-course{font-size:.9em;color:var(--gold-soft);font-weight:600}
+.prep{display:flex;flex-direction:column;align-items:center;gap:6px}
+.prep .lbl,.supervision .lbl{font-size:.8em;color:#B9CFC1;letter-spacing:.02em}
+.prep .names{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 14px}
+.prep .names strong{font-family:var(--display);font-weight:700;color:#fff;font-size:1.12em;border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:3px 18px}
+.supervision{display:flex;flex-direction:column;align-items:center;gap:2px;background:rgba(197,155,39,.14);border:1.5px solid var(--gold);border-radius:12px;padding:12px clamp(24px,5vw,56px);position:relative}
+.supervision::before,.supervision::after{content:"";position:absolute;top:50%;width:clamp(20px,6vw,70px);height:1px;background:var(--gold)}
+.supervision::before{right:100%;margin-right:12px}.supervision::after{left:100%;margin-left:12px}
+.supervision strong{font-family:var(--display);font-weight:800;color:var(--gold-soft);font-size:clamp(1.3em,2.2vw,1.7em)}
+
+/* definition triad */
+.triad{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:0;border:1px solid var(--line);border-radius:var(--r);background:var(--card);box-shadow:var(--shadow);overflow:hidden}
+.triad>div{padding:18px 20px;display:flex;flex-direction:column;gap:6px;border-inline-start:1px solid var(--line)}
+.triad>div:first-child{border-inline-start:0}
+.triad .k{font-family:var(--display);font-weight:800;color:var(--gold-ink);font-size:.82em}
+
+/* ladder */
+.ladder{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;align-items:end}
+.rung{background:var(--card);border:1px solid var(--line);border-radius:var(--r) var(--r) 0 0;padding:12px 14px;display:flex;flex-direction:column;gap:4px;border-bottom:3px solid var(--green)}
+.rung:nth-child(1){min-height:130px}.rung:nth-child(2){min-height:160px}.rung:nth-child(3){min-height:190px}.rung:nth-child(4){min-height:220px;border-bottom-color:var(--gold)}
+.rung b{font-family:var(--display);color:var(--green-deep)}
+@media (max-width:640px){.ladder{grid-template-columns:1fr 1fr}.rung{min-height:0!important}}
+
+/* diagrams */
+.diag{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:10px;box-shadow:var(--shadow);overflow-x:auto}
+.diag svg{display:block;width:100%;height:auto;min-width:300px}
+.diag figcaption{font-size:.82em;color:var(--muted);padding:6px 8px 2px}
+figure{margin:0}
+
+/* classifier */
+.clf{display:grid;grid-template-columns:minmax(0,360px) minmax(0,1fr);gap:16px}
+@media (max-width:860px){.clf{grid-template-columns:1fr}}
+.field{display:flex;flex-direction:column;gap:4px}
+.field label{font-weight:600;font-size:.88em;color:var(--green-deep)}
+select{appearance:none;background:var(--card) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%230F5338' stroke-width='2'/%3E%3C/svg%3E") no-repeat left 12px center;border:1px solid var(--green-line);border-radius:8px;padding:8px 12px 8px 34px;color:var(--ink);width:100%}
+.presets{display:flex;flex-wrap:wrap;gap:6px}
+.presets button{border:1px dashed var(--gold);background:var(--gold-tint);color:var(--gold-ink);border-radius:999px;padding:3px 12px;font-size:.8em;cursor:pointer}
+.presets button:hover{background:#F6E8BD}
+.out{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:12px}
+.out .card{gap:4px}
+.out .k{font-size:.76em;font-weight:600;color:var(--gold-ink)}
+.out .v{font-weight:600;color:var(--ink)}
+.out .card.hl{background:var(--green);border-color:var(--green)}
+.out .card.hl .k{color:var(--gold-soft)}.out .card.hl .v{color:#fff}
+.warnbox{border:1px solid #E6C3BD;background:var(--warn-tint);color:var(--warn);border-radius:var(--r);padding:10px 14px;font-size:.88em}
+
+/* checklist */
+.check{display:flex;gap:12px;align-items:flex-start;cursor:pointer}
+.check input{width:20px;height:20px;accent-color:var(--green);margin-top:6px;flex:none}
+.meter{height:10px;background:var(--line);border-radius:999px;overflow:hidden}
+.meter i{display:block;height:100%;background:var(--green);width:0;transition:width .3s ease}
+
+/* references */
+.refs{display:grid;gap:10px}
+.refs p{padding-inline-start:2em;text-indent:-2em;font-size:.9em}
+.refs .ltr{direction:ltr;text-align:left;padding-inline-start:0;padding-left:2em;text-indent:-2em}
+a{color:var(--navy);text-decoration-color:var(--gold);text-underline-offset:3px;word-break:break-word}
+
+/* controls */
+.controls{background:var(--card);border-top:1px solid var(--line);position:relative;padding:8px max(16px,2.4vw) calc(8px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:12px}
+.progress{position:absolute;top:-1px;right:0;height:3px;background:var(--gold);transition:width .35s ease}
+.nav-btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--green-line);background:var(--card);color:var(--green);border-radius:8px;padding:6px 14px;cursor:pointer;font-weight:600}
+.nav-btn:hover:not(:disabled){background:var(--green-tint)}
+.nav-btn.primary{background:var(--green);color:#fff;border-color:var(--green)}
+.nav-btn.primary:hover:not(:disabled){background:var(--green-deep)}
+.nav-btn:disabled{opacity:.4;cursor:default}
+.counter{font-variant-numeric:tabular-nums;font-weight:600;color:var(--green-deep);white-space:nowrap}
+.cur-title{flex:1;min-width:0;color:var(--muted);font-size:.84em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kbd-hint{font-size:.74em;color:var(--muted);white-space:nowrap}
+@media (max-width:720px){.kbd-hint,.cur-title{display:none}.controls{justify-content:space-between}}
+
+/* index overlay */
+.overlay{position:fixed;inset:0;background:rgba(11,63,42,.55);backdrop-filter:blur(3px);display:flex;align-items:flex-start;justify-content:center;padding:calc(24px + env(safe-area-inset-top,0px)) 16px 24px;z-index:20;overflow-y:auto}
+.panel{background:var(--ground);border-radius:14px;max-width:1100px;width:100%;padding:20px;display:flex;flex-direction:column;gap:14px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.panel-head h2{margin:0;font-family:var(--display);color:var(--green-deep);font-size:1.3em}
+.idx{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,220px),1fr));gap:10px}
+.idx button{text-align:start;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;cursor:pointer;display:flex;gap:10px;align-items:flex-start;color:var(--ink);line-height:1.5}
+.idx button:hover{border-color:var(--gold)}
+.idx button[aria-current=true]{border-color:var(--green);background:var(--green-tint)}
+.idx .n{font-family:var(--display);font-weight:800;color:var(--gold-ink);font-variant-numeric:tabular-nums;min-width:1.6em}
+.idx .sec{display:block;font-size:.74em;color:var(--muted)}
+
+/* print */
+@media print{
+  html,body{height:auto;background:#fff}
+  .topbar,.controls,.overlay,.presets{display:none!important}
+  .app{display:block;height:auto}
+  .stage{overflow:visible}
+  .slide{display:block!important;position:static;overflow:visible;break-after:page;padding:18mm 14mm;animation:none}
+  .slide.cover{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  [role=tabpanel][hidden]{display:block!important;margin-top:10px}
+  .tablist{display:none}
+  .card,.tbl-wrap,.diag{box-shadow:none}
+  thead th{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  table{min-width:0}
+}
+</style>
+
+</head>
+<body>
+<div class="app" dir="rtl" lang="ar">
+  <header class="topbar">
+    <div class="brand">
+      <span class="tb-logo"><img src="data:image/jpeg;base64,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" alt="شعار جامعة الجوف"></span>
+      <div class="brand-txt">
+        <b>جامعة الجوف · كلية التربية</b>
+        <span>قسم القيادة والسياسات التربوية · مقرر طرق البحث التربوي — الدراسات العليا</span>
+      </div>
+    </div>
+    <button class="tb-btn" id="btn-index" aria-haspopup="dialog">
+      <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><g fill="#F3E6BF"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></g></svg>
+      <span class="lbl">فهرس المحاور</span>
+    </button>
+    <button class="tb-btn" id="btn-fs">
+      <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M1 5V1h4M11 1h4v4M15 11v4h-4M5 15H1v-4" fill="none" stroke="#F3E6BF" stroke-width="1.8"/></svg>
+      <span class="lbl">ملء الشاشة</span>
+    </button>
+  </header>
+
+  <main class="stage" id="stage">
+
+<!-- 1 COVER -->
+<section class="slide cover" data-title="الغلاف" data-sec="الشريحة الشرفية">
+  <div class="inner">
+    <div class="logo-card"><img src="data:image/jpeg;base64,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" alt="شعار جامعة الجوف"></div>
+    <div class="cover-org">
+      <span>المملكة العربية السعودية · وزارة التعليم</span>
+      <b>جامعة الجوف — عمادة الدراسات العليا</b>
+      <span>كلية التربية · قسم القيادة والسياسات التربوية</span>
+    </div>
+    <div class="cover-title">
+      <h1>متغيرات البحث ومصادر جمع البيانات</h1>
+      <p class="sub">الإطار المفاهيمي والتصنيفات المنهجية الشاملة للمتغيرات، وطرق ضبطها، والمصادر الأولية والثانوية لجمع البيانات ومنهجية نقد الوثائق</p>
+      <p class="cover-course">مقرر طرق البحث التربوي · مرحلة الدراسات العليا</p>
+    </div>
+    <div class="prep">
+      <span class="lbl">إعداد الطالبتين</span>
+      <div class="names"><strong>رشا الشايع</strong><strong>حور السرحاني</strong></div>
+    </div>
+    <div class="supervision">
+      <span class="lbl">إشراف سعادة الأستاذة الدكتورة</span>
+      <strong>د. خولة البرجس</strong>
+    </div>
+  </div>
+</section>
+
+<!-- 2 INTRO -->
+<section class="slide" data-title="التقديم المنهجي وفجوة العروض السابقة" data-sec="أولاً · المقدمة">
+  <div class="inner">
+    <div><div class="eyebrow">أولاً · المقدمة</div><h2 class="st">لماذا نعيد بناء موضوع المتغيرات ومصادر البيانات؟</h2></div>
+    <p class="lede">لا يستطيع الباحث صياغة مشكلة بحثه ولا أسئلته أو فروضه صياغة دقيقة ما لم يحدد بوضوح المتغيرات التي يتناولها، وطبيعة العلاقة بينها، ونوع البيانات اللازمة لدراستها والمصادر الملائمة للحصول عليها <span class="cite">عبيدات وعدس وعبد الحق، 2015؛ Fraenkel et al., 2019</span></p>
+    <div class="grid g3">
+      <div class="card"><span class="tag">المنطلق</span><h3>دقة المتغيرات أساس البناء العلمي</h3><p>تحديد المتغيرات واختيار مصادر بياناتها بوعي منهجي من أهم الخطوات التي يقوم عليها البحث التربوي، بما يتفق مع طبيعة البحث وتصميمه وأهدافه.</p></div>
+      <div class="card"><span class="tag warn">الفجوة (1)</span><h3>قصور النموذج السببي التقليدي</h3><p>اقتصرت العروض التقليدية على التصنيف الثلاثي (مستقل، تابع، ضابط)، وأغفلت مستوى القياس الإحصائي، وإمكانية التحكم التجريبي، وإجراءات ضبط المتغيرات الدخيلة.</p></div>
+      <div class="card"><span class="tag warn">الفجوة (2)</span><h3>إغفال المصادر الثانوية الوطنية</h3><p>تركيز على أدوات جمع البيانات الأولية (الاستبانة، المقابلة، الملاحظة) مع إغفال المصادر الرسمية السعودية: نظام نور، منصة مدرستي، بيانات هيئة تقويم التعليم والتدريب <span class="cite">أبو حطب وصادق، 2010؛ العساف، 2006</span></p></div>
+    </div>
+    <div class="card">
+      <h3>المحاور الأربعة التي يستوفيها البحث</h3>
+      <div class="grid g4">
+        <div class="plain"><span class="tag gold">المحور 1</span><p>الإطار المفاهيمي الكامل لمتغير البحث (لغويًا واصطلاحيًا وإجرائيًا) وعلاقته بالفرضيات والتصميمات.</p></div>
+        <div class="plain"><span class="tag gold">المحور 2</span><p>التصنيفات المنهجية من ثلاث زوايا متكاملة، مع طرق ضبط المتغيرات الدخيلة إحصائيًا ومنهجيًا.</p></div>
+        <div class="plain"><span class="tag gold">المحور 3</span><p>التعمق في المصادر الأولية والثانوية في السياق التربوي السعودي، ومنهجية نقدها وفحصها.</p></div>
+        <div class="plain"><span class="tag gold">المحور 4</span><p>تنويع العزو المرجعي بأمهات كتب مناهج البحث العربية، مدعومة بمراجع أجنبية تأسيسية.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 CONCEPT -->
+<section class="slide" data-title="الإطار المفاهيمي الثلاثي لمتغير البحث" data-sec="ثانياً · الإطار المفاهيمي">
+  <div class="inner">
+    <div><div class="eyebrow">ثانياً · الإطار المفاهيمي</div><h2 class="st">المتغير <span class="en">(Variable)</span>: ثلاثة مستويات للتعريف</h2></div>
+    <div class="triad">
+      <div><span class="k">لغويًا</span><p>اسم فاعل من الفعل «تغيّر»، أي تحوّل من حال إلى حال أو اختلف مقداره أو صفته؛ فهو كل ما لا يبقى على حال واحدة.</p></div>
+      <div><span class="k">اصطلاحيًا</span><p>خاصية أو صفة أو سمة تأخذ قيمًا أو مستويات أو فئات مختلفة، وتتباين من فرد إلى آخر أو من حالة أو زمن إلى آخر، ويمكن ملاحظتها أو قياسها <span class="cite">عبيدات وآخرون، 2015؛ ملحم، 2000</span></p></div>
+      <div><span class="k">إجرائيًا</span><p>الصياغة التطبيقية التي يضعها الباحث لتحديد كيفية قياس المتغير أو ملاحظته أو معالجته داخل حدود دراسته؛ فالتحصيل الدراسي: «الدرجة التي يحصل عليها الطالب في اختبار التحصيل المُعَدّ لأغراض هذه الدراسة» <span class="cite">أبو حطب وصادق، 2010</span></p></div>
+    </div>
+    <div class="grid g2">
+      <div class="card">
+        <h3>صياغات الباحثين: اختلاف في اللفظ واتفاق في الجوهر</h3>
+        <div class="quote"><p>«الخاصية التي يمكن أن تأخذ قيمًا أو فئات متعددة، ويسعى الباحث إلى دراستها أو ضبطها أو التحكم فيها».</p><span class="cite">عبيدات وعدس وعبد الحق (2015)</span></div>
+        <div class="quote"><p>صفة أو خاصية قابلة للقياس تتخذ أكثر من قيمة واحدة، ويهتم الباحث التربوي بدراسة علاقاتها المتبادلة.</p><span class="cite">ملحم (2000)</span></div>
+        <div class="quote"><p>خاصية أو سمة للفرد أو المنظمة يمكن قياسها أو ملاحظتها، وتتفاوت بين الأفراد أو المنظمات موضع الدراسة.</p><span class="cite">Creswell &amp; Guetterman (2024)</span></div>
+      </div>
+      <div class="grid" style="align-content:start">
+        <div class="note">
+          <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#C59B27"/><rect x="11" y="10" width="2" height="7" fill="#fff"/><rect x="11" y="6.5" width="2" height="2" fill="#fff"/></svg>
+          <div><h3 style="color:var(--gold-ink)">مقابل المتغير: «الثابت» <span class="en">(Constant)</span></h3><p>في البحوث التجريبية، الثابت هو كل عامل يحرص الباحث على إبقائه على حال واحدة طوال التجربة حتى لا يتداخل أثره مع أثر المتغيرات موضع الدراسة <span class="cite">أبو حطب وصادق، 2010</span></p></div>
+        </div>
+        <div class="card"><h3>أمثلة شائعة في البحوث التربوية</h3>
+          <div class="chips"><span class="chip">التحصيل الدراسي</span><span class="chip">الدافعية للتعلم</span><span class="chip">الاتجاهات نحو المادة</span><span class="chip">الخبرة التعليمية</span><span class="chip">الرضا الوظيفي</span><span class="chip">أساليب القيادة المدرسية</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4 VALIDITY -->
+<section class="slide" data-title="العلاقة بالفرضيات والتصميم والصدق المنهجي" data-sec="ثانياً · الإطار المفاهيمي">
+  <div class="inner">
+    <div><div class="eyebrow">ثانياً · أهمية ضبط المتغيرات</div><h2 class="st">المتغيرات تصوغ الفرضية، وتفرض التصميم، وتحرس الصدق</h2></div>
+    <div class="grid g3">
+      <div class="card"><span class="tag">الفرضية</span><p>الفرضية العلمية عبارة تنبؤية عن علاقة بين متغيرين أو أكثر، ولا تُصاغ صياغة قابلة للاختبار الإحصائي ما لم تُحدَّد متغيراتها وتُعرَّف إجرائيًا <span class="cite">جابر وكاظم، 1978</span></p></div>
+      <div class="card"><span class="tag navy">التصميم التجريبي</span><p>وجود متغير مستقل يمكن التلاعب به يفتح الباب أمام التصميم <b>التجريبي أو شبه التجريبي</b>.</p></div>
+      <div class="card"><span class="tag navy">الوصفي / السببي المقارن</span><p>وجود متغيرات سماتية لا يمكن التحكم فيها (كالجنس أو المستوى الاقتصادي) يفرض التصميمات <b>الوصفية أو السببية المقارنة</b> <span class="cite">القحطاني وآخرون، 2020</span></p></div>
+    </div>
+    <div class="grid g2">
+      <div class="card">
+        <span class="tag">الصدق الداخلي · <span class="en" style="color:inherit">Internal Validity</span></span>
+        <p>مدى إمكان الجزم بأن التغير في المتغير التابع يُعزى فعلًا إلى المتغير المستقل، لا إلى متغيرات دخيلة لم تُضبط.</p>
+        <p style="font-weight:600;color:var(--green-deep)">أكثر تهديداته شيوعًا صورٌ لمتغيرات دخيلة لم تُضبط:</p>
+        <div class="chips"><span class="chip">أثر النضج</span><span class="chip">أثر التاريخ</span><span class="chip">تحيّز الاختيار</span><span class="chip">أثر الاختبار القبلي</span></div>
+        <p class="cite" style="margin-top:4px">أبو علام، 2011؛ العساف، 2006</p>
+      </div>
+      <div class="card">
+        <span class="tag gold">الصدق الخارجي · <span class="en" style="color:inherit">External Validity</span></span>
+        <p>مدى إمكان تعميم نتائج الدراسة على مجتمعات ومواقف أخرى غير تلك التي أُجريت فيها الدراسة.</p>
+        <p style="font-weight:600;color:var(--green-deep)">يعززه:</p>
+        <ul class="clean"><li>اختيار عينة ممثلة لمجتمع الدراسة.</li><li>متغيرات ذات مؤشرات إجرائية واضحة القياس.</li></ul>
+      </div>
+    </div>
+    <div class="note"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#C59B27"/><rect x="11" y="10" width="2" height="7" fill="#fff"/><rect x="11" y="6.5" width="2" height="2" fill="#fff"/></svg>
+      <p>إتقان الباحث لتصنيف متغيراته وإجراءات ضبطها ليس ترفًا نظريًا، بل هو <b>الضمانة المنهجية الأولى لصدق نتائجه الداخلي</b>.</p></div>
+  </div>
+</section>
+
+<!-- 5 ROLES TABS -->
+<section class="slide" data-title="التصنيف (أ): الدور الوظيفي — المتغيرات الستة" data-sec="ثالثاً · التصنيف حسب الدور">
+  <div class="inner">
+    <div><div class="eyebrow">ثالثاً · التصنيف (أ) حسب الدور الوظيفي وعلاقات التأثير</div><h2 class="st">ستة أدوار للمتغير في شبكة العلاقات السببية والارتباطية</h2></div>
+    <div class="tabs" data-tabs>
+      <div class="tablist" role="tablist" aria-label="أدوار المتغيرات">
+        <button role="tab" aria-selected="true" data-tab="r1">المستقل</button>
+        <button role="tab" aria-selected="false" data-tab="r2">التابع</button>
+        <button role="tab" aria-selected="false" data-tab="r3">الضابط / المقيَّد</button>
+        <button role="tab" aria-selected="false" data-tab="r4">الدخيل</button>
+        <button role="tab" aria-selected="false" data-tab="r5">الوسيط / الشارح</button>
+        <button role="tab" aria-selected="false" data-tab="r6">المعدِّل</button>
+      </div>
+      <div role="tabpanel" data-panel="r1" class="grid g2">
+        <div class="card"><span class="en">Independent Variable</span><h3>المستقل: السبب المفترَض</h3><p>المتغير الذي يفترض الباحث أن له تأثيرًا في متغير آخر، ويقوم بدراسته أو التحكم فيه أو معالجته لملاحظة أثره.</p><p class="cite">عبيدات وعدس وعبد الحق، 2015؛ ملحم، 2000</p></div>
+        <div class="card"><span class="tag gold">مثال ميداني سعودي</span><p>«استراتيجية التعلم التعاوني» في دراسة أثرها على التحصيل الدراسي لطلاب الصف السادس الابتدائي في إحدى مدارس منطقة الجوف.</p><span class="tag navy">التعامل الإحصائي</span><p>يُحدَّد له مستويان أو أكثر (تجريبية/ضابطة) وتُقارَن آثاره باختبار (t) أو تحليل التباين (ANOVA).</p></div>
+      </div>
+      <div role="tabpanel" data-panel="r2" class="grid g2" hidden>
+        <div class="card"><span class="en">Dependent Variable</span><h3>التابع: النتيجة أو الأثر</h3><p>المتغير الذي يتغير أو يتأثر نتيجة تغير المتغير المستقل، ويمثل النتيجة التي يسعى الباحث لقياسها.</p><p class="cite">جابر وكاظم، 1978؛ Fraenkel et al., 2019</p></div>
+        <div class="card"><span class="tag gold">مثال ميداني سعودي</span><p>«التحصيل الدراسي» في مادة الرياضيات، مقاسًا باختبار تحصيلي بعدي.</p><span class="tag navy">التعامل الإحصائي</span><p>يُقاس بأداة ذات صدق وثبات مناسبين، ويكون محور المقارنة الإحصائية بين المجموعات أو عبر الزمن.</p></div>
+      </div>
+      <div role="tabpanel" data-panel="r3" class="grid g2" hidden>
+        <div class="card"><span class="en">Control Variable</span><h3>الضابط / المقيَّد: عامل يُثبَّت لعزل أثره</h3><p>متغير يسعى الباحث إلى ضبط أثره أو تثبيته أو استبعاده حتى لا يتداخل تأثيره مع أثر المتغير المستقل في تفسير النتائج.</p><p class="cite">القحطاني وآخرون، 2020؛ العساف، 2006</p></div>
+        <div class="card"><span class="tag gold">مثال ميداني سعودي</span><p>ضبط «المستوى الاقتصادي للأسرة» أو «نوع المدرسة (حكومية/أهلية)» بحيث تكون المجموعتان التجريبية والضابطة متكافئتين فيهما.</p><span class="tag navy">التعامل الإحصائي</span><p>يُضبط تصميميًا (عينة متجانسة فيه) أو إحصائيًا (متغيرًا مصاحبًا في تحليل التباين المشترك).</p></div>
+      </div>
+      <div role="tabpanel" data-panel="r4" class="grid g2" hidden>
+        <div class="card"><span class="en">Extraneous / Confounding Variable</span><h3>الدخيل: تهديد غير مخطط للصدق الداخلي</h3><p>متغير غير مقصود في التصميم، قد يتداخل مع أثر المستقل في التابع دون أن يخطط له الباحث أو يضبطه، مما يهدد الصدق الداخلي إذا لم يُكتشف ويُضبط.</p><p class="cite">جابر وكاظم، 1978؛ ملحم، 2000</p></div>
+        <div class="card"><span class="tag gold">مثال ميداني سعودي</span><p>تفاوت خبرة المعلمين القائمين على تطبيق التجربة بين المجموعتين في مدرستين مختلفتين عند مقارنة استراتيجيتي تدريس.</p><span class="tag navy">التعامل الإحصائي</span><p>يُعامَل بإجراءات الضبط: ANCOVA، العشوائية، التثبيت، المجموعات المتناظرة (انظر شريحة طرق الضبط).</p></div>
+      </div>
+      <div role="tabpanel" data-panel="r5" class="grid g2" hidden>
+        <div class="card"><span class="en">Mediator Variable</span><h3>الوسيط / الشارح: يجيب عن «كيف؟ ولماذا؟»</h3><p>يقع منطقيًا وزمنيًا بين المستقل والتابع، ويفسّر الآلية التي من خلالها يُحدث المستقل أثره في التابع.</p><p class="cite">ملحم، 2000؛ القحطاني وآخرون، 2020</p></div>
+        <div class="card"><span class="tag gold">مثال ميداني سعودي</span><p>«الدافعية للتعلم» بين «التعلم الممزوج» و«التحصيل»: التعلم الممزوج يرفع الدافعية، وارتفاع الدافعية هو ما يرفع بدوره التحصيل.</p><span class="tag navy">التعامل الإحصائي</span><p>تحليل الوساطة <span class="en">(Mediation Analysis)</span> لتقدير الأثر غير المباشر للمستقل على التابع عبر الوسيط.</p></div>
+      </div>
+      <div role="tabpanel" data-panel="r6" class="grid g2" hidden>
+        <div class="card"><span class="en">Moderator Variable</span><h3>المعدِّل: يجيب عن «متى؟ ولمن؟»</h3><p>يؤثر في قوة العلاقة بين المستقل والتابع أو اتجاهها، بحيث تختلف العلاقة باختلاف مستوياته.</p><p class="cite">ملحم، 2000؛ القحطاني وآخرون، 2020</p></div>
+        <div class="card"><span class="tag gold">مثال ميداني سعودي</span><p>«الجنس» معدِّلًا للعلاقة بين «الألعاب التعليمية الرقمية» و«التحصيل»، إذا تبيّن أن الأثر أقوى لدى الطلاب منه لدى الطالبات.</p><span class="tag navy">التعامل الإحصائي</span><p>تحليل التفاعل <span class="en">(Interaction Analysis)</span> بين المستقل والمعدِّل في الانحدار أو تحليل التباين العاملي.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 6 TABLE 1 -->
+<section class="slide" data-title="جدول (1): مقارنة المتغيرات الستة" data-sec="ثالثاً · التصنيف حسب الدور">
+  <div class="inner">
+    <div><div class="eyebrow">ثالثاً · التصنيف (أ)</div><h2 class="st">مقارنة شاملة بين المتغيرات الستة حسب الدور الوظيفي</h2></div>
+    <div class="tbl-wrap"><table>
+      <caption>جدول (1): مقارنة شاملة بين المتغيرات الستة حسب الدور الوظيفي</caption>
+      <thead><tr><th>المتغير</th><th>دوره في العلاقة</th><th>السؤال الذي يجيب عنه</th><th>أسلوب التعامل الإحصائي/التجريبي</th></tr></thead>
+      <tbody>
+        <tr><th>المستقل</th><td>السبب المفترَض</td><td>ما الذي يُحدِث الأثر؟</td><td>تحديد مستويات ومقارنتها بـ t / ANOVA</td></tr>
+        <tr><th>التابع</th><td>النتيجة أو الأثر</td><td>ما الذي تغيّر؟</td><td>قياسه بأداة صادقة وثابتة، ومقارنته بين المستويات</td></tr>
+        <tr><th>الضابط/المقيَّد</th><td>عامل يُثبَّت لعزل أثره</td><td>ماذا يجب تحييده؟</td><td>الضبط التصميمي أو تحليل التباين المشترك (ANCOVA)</td></tr>
+        <tr><th>الدخيل</th><td>تهديد غير مخطط للصدق الداخلي</td><td>ما الذي قد يشوّه النتائج؟</td><td>الضبط الإحصائي أو التصميمي (انظر جدول 2)</td></tr>
+        <tr><th>الوسيط/الشارح</th><td>آلية تفسير الأثر</td><td>كيف/لماذا يحدث الأثر؟</td><td>تحليل الوساطة (Mediation Analysis)</td></tr>
+        <tr><th>المعدِّل</th><td>يغيّر قوة العلاقة أو اتجاهها</td><td>متى/لمن تكون العلاقة أقوى؟</td><td>تحليل التفاعل (Interaction Analysis)</td></tr>
+      </tbody></table></div>
+  </div>
+</section>
+
+<!-- 7 CRITICAL DISTINCTION -->
+<section class="slide" data-title="تفكيك الخلط: الدخيل والمعدِّل والوسيط" data-sec="ثالثاً · قضية منهجية دقيقة">
+  <div class="inner">
+    <div><div class="eyebrow">قضية منهجية دقيقة</div><h2 class="st">الدخيل، والمعدِّل، والوسيط: تشابه ظاهري واختلاف جوهري</h2>
+    <p class="lede">ثلاثتها «تتوسط» أو «تتفاعل» مع العلاقة الأساسية، لكنها تختلف في موقعها المنطقي وفي معالجتها الإحصائية <span class="cite">ملحم، 2000؛ القحطاني وآخرون، 2020</span></p></div>
+    <div class="grid g3">
+      <figure class="diag">
+        <svg viewBox="0 0 300 150" role="img" aria-label="الوسيط داخل المسار السببي">
+          <defs><marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#0F5338"/></marker></defs>
+          <rect x="220" y="95" width="72" height="36" rx="7" fill="#E7F0EA" stroke="#0F5338"/><text x="256" y="118" text-anchor="middle" font-size="13" fill="#0B3F2A" font-family="IBM Plex Sans Arabic, sans-serif">المستقل X</text>
+          <rect x="8" y="95" width="72" height="36" rx="7" fill="#E7F0EA" stroke="#0F5338"/><text x="44" y="118" text-anchor="middle" font-size="13" fill="#0B3F2A" font-family="IBM Plex Sans Arabic, sans-serif">التابع Y</text>
+          <rect x="112" y="14" width="76" height="36" rx="7" fill="#0F5338"/><text x="150" y="37" text-anchor="middle" font-size="13" fill="#FFFFFF" font-family="IBM Plex Sans Arabic, sans-serif">الوسيط M</text>
+          <path d="M235 95L186 52" stroke="#0F5338" stroke-width="2" fill="none" marker-end="url(#a1)"/>
+          <path d="M114 52L66 95" stroke="#0F5338" stroke-width="2" fill="none" marker-end="url(#a1)"/>
+          <path d="M218 118L84 118" stroke="#9FB3A7" stroke-width="1.5" stroke-dasharray="4 4" fill="none" marker-end="url(#a1)"/>
+        </svg>
+        <figcaption><b>الوسيط</b>: داخل المسار، حلقة ناقلة للأثر — تحليل الوساطة/المسار.</figcaption>
+      </figure>
+      <figure class="diag">
+        <svg viewBox="0 0 300 150" role="img" aria-label="المعدل يؤثر في قوة العلاقة من الخارج">
+          <defs><marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#C59B27"/></marker><marker id="a2g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#0F5338"/></marker></defs>
+          <rect x="220" y="24" width="72" height="36" rx="7" fill="#E7F0EA" stroke="#0F5338"/><text x="256" y="47" text-anchor="middle" font-size="13" fill="#0B3F2A" font-family="IBM Plex Sans Arabic, sans-serif">المستقل X</text>
+          <rect x="8" y="24" width="72" height="36" rx="7" fill="#E7F0EA" stroke="#0F5338"/><text x="44" y="47" text-anchor="middle" font-size="13" fill="#0B3F2A" font-family="IBM Plex Sans Arabic, sans-serif">التابع Y</text>
+          <path d="M218 42L84 42" stroke="#0F5338" stroke-width="2" fill="none" marker-end="url(#a2g)"/>
+          <rect x="110" y="102" width="80" height="36" rx="7" fill="#FBF4E0" stroke="#C59B27"/><text x="150" y="125" text-anchor="middle" font-size="13" fill="#8A6A12" font-family="IBM Plex Sans Arabic, sans-serif">المعدِّل W</text>
+          <path d="M150 100L150 48" stroke="#C59B27" stroke-width="2" fill="none" marker-end="url(#a2)"/>
+        </svg>
+        <figcaption><b>المعدِّل</b>: خارج المسار، يغيّر قوة العلاقة — تحليل التفاعل.</figcaption>
+      </figure>
+      <figure class="diag">
+        <svg viewBox="0 0 300 150" role="img" aria-label="الدخيل يشوش العلاقة">
+          <defs><marker id="a3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#A3392F"/></marker><marker id="a3g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#0F5338"/></marker></defs>
+          <rect x="220" y="24" width="72" height="36" rx="7" fill="#E7F0EA" stroke="#0F5338"/><text x="256" y="47" text-anchor="middle" font-size="13" fill="#0B3F2A" font-family="IBM Plex Sans Arabic, sans-serif">المستقل X</text>
+          <rect x="8" y="24" width="72" height="36" rx="7" fill="#E7F0EA" stroke="#0F5338"/><text x="44" y="47" text-anchor="middle" font-size="13" fill="#0B3F2A" font-family="IBM Plex Sans Arabic, sans-serif">التابع Y</text>
+          <path d="M218 42L84 42" stroke="#0F5338" stroke-width="2" fill="none" marker-end="url(#a3g)"/>
+          <rect x="110" y="102" width="80" height="36" rx="7" fill="#F8E9E6" stroke="#A3392F" stroke-dasharray="5 3"/><text x="150" y="125" text-anchor="middle" font-size="13" fill="#A3392F" font-family="IBM Plex Sans Arabic, sans-serif">الدخيل Z</text>
+          <path d="M122 102L64 62" stroke="#A3392F" stroke-width="1.8" stroke-dasharray="5 4" fill="none" marker-end="url(#a3)"/>
+          <path d="M178 102L236 62" stroke="#A3392F" stroke-width="1.8" stroke-dasharray="5 4" fill="none" marker-end="url(#a3)"/>
+        </svg>
+        <figcaption><b>الدخيل</b>: تهديد يشوّش التفسير — يُضبط ويُستبعد.</figcaption>
+      </figure>
+    </div>
+    <div class="tabs" data-tabs>
+      <div class="tablist" role="tablist" aria-label="أوجه التمييز">
+        <button role="tab" aria-selected="true" data-tab="d1">الدخيل مقابل المعدِّل</button>
+        <button role="tab" aria-selected="false" data-tab="d2">المعدِّل مقابل الوسيط</button>
+        <button role="tab" aria-selected="false" data-tab="d3">خطورة الخلط عمليًا</button>
+      </div>
+      <div role="tabpanel" data-panel="d1" class="grid g2">
+        <div class="card"><span class="tag warn">الدخيل = تهديد</span><p>يُعامَل بوصفه «تهديدًا» يجب استبعاده أو ضبط أثره لأنه يشوّش تفسير العلاقة الأصلية؛ <b>يُضبط لإزالته من المعادلة</b>.</p></div>
+        <div class="card"><span class="tag gold">المعدِّل = موضع اهتمام</span><p>جزء أصيل من نموذج الدراسة يدرسه الباحث عمدًا لمعرفة الظروف التي تقوى فيها العلاقة أو تضعف؛ <b>يُقاس ويُحلَّل بتحليل التفاعل</b>.</p></div>
+      </div>
+      <div role="tabpanel" data-panel="d2" class="grid g2" hidden>
+        <div class="card"><span class="tag gold">المعدِّل: خارج المسار السببي</span><p>يؤثر في «قوة» العلاقة من الخارج (لمن تقوى العلاقة؟) ← <span class="en">Interaction</span></p></div>
+        <div class="card"><span class="tag">الوسيط: داخل المسار السببي</span><p>حلقة ناقلة للأثر تفسّر آلية حدوثه (كيف يحدث الأثر؟) ← <span class="en">Mediation / Path Analysis</span></p><p class="cite">أسلوبان مختلفان تمامًا في المنطق والتفسير</p></div>
+      </div>
+      <div role="tabpanel" data-panel="d3" hidden>
+        <div class="note"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L23 21H1z" fill="#A3392F"/><rect x="11" y="9" width="2" height="6" fill="#fff"/><rect x="11" y="16.5" width="2" height="2" fill="#fff"/></svg>
+        <p>معاملة متغير وسيط على أنه معدِّل (أو العكس) تقود إلى <b>أسلوب إحصائي خاطئ</b>، ومن ثمّ إلى <b>استنتاجات مغلوطة</b> حول طبيعة العلاقة — وهو خطأ منهجي شائع تحرص لجان مناقشة الرسائل العلمية على التحقق من خلو خطة البحث منه.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 8 CONTROL METHODS -->
+<section class="slide" data-title="طرق وإجراءات ضبط المتغيرات الدخيلة" data-sec="ثالثاً · طرق الضبط">
+  <div class="inner">
+    <div><div class="eyebrow">ثالثاً · طرق ضبط المتغيرات الدخيلة</div><h2 class="st">أربعة إجراءات متكاملة لصون الصدق الداخلي</h2>
+    <p class="lede">نوعان متكاملان: ضبط إحصائي بعدي أثناء التحليل، وضبط تصميمي قبلي قبل بدء التجربة <span class="cite">جابر وكاظم، 1978؛ القحطاني وآخرون، 2020</span></p></div>
+    <div class="grid g4">
+      <div class="card"><span class="tag navy">بعدي · إحصائي</span><h3>الضبط الإحصائي <span class="en">ANCOVA</span></h3><p>إدخال المتغير الدخيل (كالتحصيل القبلي) متغيرًا مصاحبًا <span class="en">(Covariate)</span> يُعدَّل عليه إحصائيًا قبل مقارنة المتوسطات.</p></div>
+      <div class="card"><span class="tag">قبلي · تصميمي</span><h3>العشوائية <span class="en">Randomization</span></h3><p>توزيع الأفراد عشوائيًا على المجموعات، فتتوزع الدخيلة المعروفة وغير المعروفة توزيعًا متكافئًا؛ وهي أقوى أساليب الضبط في التصميمات التجريبية الحقيقية.</p></div>
+      <div class="card"><span class="tag">قبلي · تصميمي</span><h3>التثبيت <span class="en">Constancy</span></h3><p>إبقاء المتغير الدخيل على مستوى واحد لجميع الأفراد: الصف نفسه، والتوقيت نفسه، والمعلم نفسه.</p></div>
+      <div class="card"><span class="tag">قبلي · تصميمي</span><h3>المجموعات المتناظرة <span class="en">Matching</span></h3><p>مطابقة كل فرد تجريبي بفرد ضابط يناظره في المتغير الدخيل (العمر، التحصيل القبلي، المستوى الاقتصادي).</p></div>
+    </div>
+    <div class="tbl-wrap"><table>
+      <caption>جدول (2): مقارنة بين طرق ضبط المتغيرات الدخيلة</caption>
+      <thead><tr><th>طريقة الضبط</th><th>نوعها</th><th>آلية العمل</th><th>مثال تطبيقي</th></tr></thead>
+      <tbody>
+        <tr><th>الضبط الإحصائي (ANCOVA)</th><td>بعدي (أثناء التحليل)</td><td>تعديل إحصائي لأثر المتغير المصاحب قبل مقارنة المتوسطات</td><td>ضبط أثر التحصيل القبلي عند مقارنة التحصيل البعدي</td></tr>
+        <tr><th>العشوائية</th><td>قبلي (تصميمي)</td><td>توزيع عشوائي للأفراد على المجموعات</td><td>قرعة عشوائية لتوزيع الطلاب على مجموعتين</td></tr>
+        <tr><th>التثبيت</th><td>قبلي (تصميمي)</td><td>إبقاء المتغير الدخيل ثابتًا لجميع الأفراد</td><td>إجراء التجربة لكل المجموعات في الفصل نفسه والوقت نفسه</td></tr>
+        <tr><th>المجموعات المتناظرة</th><td>قبلي (تصميمي)</td><td>مطابقة أفراد المجموعتين على المتغير الدخيل</td><td>مطابقة كل طالب تجريبي بطالب ضابط بالتحصيل القبلي نفسه</td></tr>
+      </tbody></table></div>
+  </div>
+</section>
+
+<!-- 9 MEASUREMENT -->
+<section class="slide" data-title="التصنيف (ب): مستويات القياس الإحصائي" data-sec="ثالثاً · التصنيف حسب القياس">
+  <div class="inner">
+    <div><div class="eyebrow">ثالثاً · التصنيف (ب) حسب مستويات القياس الإحصائي</div><h2 class="st">مستوى القياس يحدد الأسلوب الإحصائي الملائم</h2>
+    <p class="lede">كل درجة في السلّم ترث خصائص ما قبلها وتضيف خاصية جديدة <span class="cite">عبيدات وآخرون، 2015؛ القحطاني وآخرون، 2020</span></p></div>
+    <div class="ladder" aria-label="سلم مستويات القياس">
+      <div class="rung"><span class="tag">نوعي</span><b>اسمي <span class="en">Nominal</span></b><span class="cite" style="font-size:.78em">فئات دون ترتيب</span></div>
+      <div class="rung"><span class="tag">نوعي</span><b>رتبي <span class="en">Ordinal</span></b><span class="cite" style="font-size:.78em">+ ترتيب منطقي</span></div>
+      <div class="rung"><span class="tag navy">كمي</span><b>فئوي <span class="en">Interval</span></b><span class="cite" style="font-size:.78em">+ وحدات متساوية</span></div>
+      <div class="rung"><span class="tag gold">كمي</span><b>نسبي <span class="en">Ratio</span></b><span class="cite" style="font-size:.78em">+ صفر حقيقي</span></div>
+    </div>
+    <div class="tbl-wrap"><table>
+      <caption>جدول (3): تصنيف المتغيرات حسب مستويات القياس الإحصائي والعمليات المناسبة لها</caption>
+      <thead><tr><th>نوع المتغير</th><th>التعريف الموجز</th><th>مثال تربوي</th><th>العملية الإحصائية المناسبة</th></tr></thead>
+      <tbody>
+        <tr><th>اسمي</th><td>فئات دون ترتيب منطقي</td><td>الجنس، التخصص، نوع المدرسة</td><td>التكرارات والنسب، مربع كاي</td></tr>
+        <tr><th>رتبي</th><td>فئات ذات تدرّج منطقي غير متساوي الفروق</td><td>المستوى التعليمي، درجات ليكرت</td><td>الوسيط، ارتباط سبيرمان</td></tr>
+        <tr><th>فئوي (متصل غالبًا)</th><td>قيم عددية بلا صفر حقيقي</td><td>الدرجة المعيارية على اختبار تحصيلي</td><td>المتوسط، الانحراف المعياري، اختبار t</td></tr>
+        <tr><th>نسبي (متصل أو منفصل)</th><td>قيم عددية بصفر حقيقي ونسب فعلية</td><td>عدد سنوات الخبرة، الوزن، عدد الطلاب</td><td>المتوسط، تحليل التباين، ارتباط بيرسون</td></tr>
+      </tbody></table></div>
+    <div class="grid g2">
+      <div class="card"><span class="tag navy">المتصل <span class="en" style="color:inherit">Continuous</span></span><p>يأخذ أي قيمة عددية ضمن مدى معين بما في ذلك الكسور العشرية: العمر بالأشهر، درجة التحصيل على مقياس متصل.</p></div>
+      <div class="card"><span class="tag navy">المنفصل <span class="en" style="color:inherit">Discrete</span></span><p>يأخذ قيمًا عددية صحيحة لا تقبل التجزئة: عدد أفراد الأسرة، عدد سنوات الخبرة التدريسية.</p></div>
+    </div>
+    <p class="cite" style="font-size:.84em">الأساليب البارامترية (t، ANOVA، بيرسون) للمتغيرات الكمية، والاختبارات اللامعلمية (كاي، سبيرمان) للمتغيرات النوعية.</p>
+  </div>
+</section>
+
+<!-- 10 ACTIVE vs ATTRIBUTE -->
+<section class="slide" data-title="التصنيف (ج): النشطة مقابل السماتية" data-sec="ثالثاً · التصنيف حسب التحكم">
+  <div class="inner">
+    <div><div class="eyebrow">ثالثاً · التصنيف (ج) حسب طبيعة المعالجة والتحكم التجريبي</div><h2 class="st">هل يستطيع الباحث أن يُعيِّن المتغير، أم يقيسه كما هو؟</h2>
+    <p class="lede">معيار محوري في التمييز بين التصاميم التجريبية والتصاميم غير التجريبية <span class="cite">Kerlinger &amp; Lee, 2000؛ ملحم، 2000</span></p></div>
+    <div class="grid g2">
+      <div class="card"><span class="tag">نشط / تجريبي · <span class="en" style="color:inherit">Active</span></span><p>يغيّره الباحث أو يعالجه ويتحكم فيه مباشرة، فيُحدث مستوياته عمدًا لدراسة أثرها؛ ويمكن التعيين العشوائي على مستوياته.</p><div class="chips"><span class="chip">طريقة التدريس (تقليدية/تعاونية)</span><span class="chip">التغذية الراجعة (فورية/مؤجلة)</span></div></div>
+      <div class="card"><span class="tag gold">تصنيفي / سماتي · <span class="en" style="color:inherit">Attribute / Organismic</span></span><p>سمات ملازمة للمفحوصين ثابتة أو شبه ثابتة، لا يمكن التلاعب بها أو تعيينها عشوائيًا؛ يقتصر دور الباحث على قياسها أو تصنيف الأفراد بحسبها.</p><div class="chips"><span class="chip">الذكاء</span><span class="chip">الجنس</span><span class="chip">العمر</span><span class="chip">المستوى الاقتصادي</span><span class="chip">نوع الإعاقة</span><span class="chip">سنوات الخبرة</span></div></div>
+    </div>
+    <div class="tbl-wrap"><table>
+      <caption>جدول (4): مقارنة بين المتغيرات النشطة والتصنيفية السماتية</caption>
+      <thead><tr><th>المعيار</th><th>المتغير النشط/التجريبي</th><th>المتغير التصنيفي/السماتي</th></tr></thead>
+      <tbody>
+        <tr><th>إمكانية التحكم</th><td>يتحكم الباحث فيه ويعالجه مباشرة</td><td>لا يمكن التحكم فيه؛ يُقاس كما هو</td></tr>
+        <tr><th>التعيين العشوائي</th><td>ممكن توزيع الأفراد عشوائيًا على مستوياته</td><td>غير ممكن (سمة ملازمة للفرد)</td></tr>
+        <tr><th>التصميم البحثي المرتبط</th><td>التصميم التجريبي وشبه التجريبي</td><td>التصميم الوصفي والسببي المقارن والارتباطي</td></tr>
+        <tr><th>مثال</th><td>طريقة التدريس، نوع التغذية الراجعة</td><td>الذكاء، الجنس، سنوات الخبرة، المستوى الاقتصادي</td></tr>
+      </tbody></table></div>
+    <div class="note"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#C59B27"/><rect x="11" y="10" width="2" height="7" fill="#fff"/><rect x="11" y="6.5" width="2" height="2" fill="#fff"/></svg>
+      <div><h3 style="color:var(--gold-ink)">التصنيفات الثلاثة متكاملة لا متنافية</h3><p>«طريقة التدريس» في آنٍ واحد: <span class="tag">مستقل — الدور</span> <span class="tag navy">اسمي — القياس</span> <span class="tag gold">نشط — التحكم</span></p></div></div>
+  </div>
+</section>
+
+<!-- 11 PRIMARY vs SECONDARY -->
+<section class="slide" data-title="المصادر الأولية مقابل الثانوية" data-sec="رابعاً · مصادر جمع البيانات">
+  <div class="inner">
+    <div><div class="eyebrow">رابعاً · مصادر جمع البيانات</div><h2 class="st">المصادر الأولية والثانوية: المفهوم والمزايا والمآخذ</h2></div>
+    <div class="grid g2">
+      <div class="card"><span class="tag">أولية · <span class="en" style="color:inherit">Primary Sources</span></span><p>بيانات يجمعها الباحث بنفسه، ولأول مرة، مباشرة من أفراد الدراسة أو من واقع الظاهرة، بالاستبانة والمقابلة والملاحظة والاختبارات <span class="cite">عبيدات وآخرون، 2015؛ العساف، 2006</span></p>
+        <p><b>متى تُفضَّل؟</b> حين لا تتوافر بيانات جاهزة تجيب عن السؤال، أو حين تستلزم المتغيرات قياسًا مباشرًا لم يسبق توثيقه (كاتجاه أو دافعية).</p></div>
+      <div class="card"><span class="tag gold">ثانوية · <span class="en" style="color:inherit">Secondary Sources</span></span><p>معلومات جُمعت أو أُنتجت مسبقًا من جهة أخرى أو لغرض آخر، يرجع إليها الباحث ويحللها أو يعيد استخدامها <span class="cite">جابر وكاظم، 1978؛ العساف، 2006</span></p>
+        <p><b>متى تُفضَّل؟</b> حين تتوافر بيانات رسمية موثوقة (سجلات الدرجات، الاختبارات الوطنية)، أو لتحليل اتجاهات عبر فترة زمنية طويلة <span class="cite">أبو علام، 2011</span></p></div>
+    </div>
+    <div class="tbl-wrap"><table>
+      <caption>جدول (5): مقارنة منهجية بين المصادر الأولية والمصادر الثانوية</caption>
+      <thead><tr><th>وجه المقارنة</th><th>المصادر الأولية</th><th>المصادر الثانوية</th></tr></thead>
+      <tbody>
+        <tr><th>جهة الجمع</th><td>الباحث نفسه</td><td>جهة أخرى (وزارة، مدرسة، باحث سابق...)</td></tr>
+        <tr><th>الغرض الأصلي من الجمع</th><td>غرض بحث الباحث الحالي تحديدًا</td><td>غرض إداري/تعليمي/بحثي آخر سابق</td></tr>
+        <tr><th>أبرز المزايا</th><td>دقة أعلى في ملاءمة الأداة لسؤال البحث؛ تحكم كامل في التصميم</td><td>توفير الوقت والجهد؛ إتاحة بيانات ضخمة وطولية يتعذر جمعها فرديًا</td></tr>
+        <tr><th>أبرز المآخذ</th><td>ارتفاع التكلفة والوقت؛ محدودية حجم العينة غالبًا</td><td>عدم تحكم الباحث في جودة الجمع الأصلي؛ احتمال عدم دقة الانطباق على سؤاله</td></tr>
+        <tr><th>أمثلة</th><td>استبانة، مقابلة، ملاحظة، اختبار</td><td>وثائق، سجلات، تقارير، دراسات سابقة، إحصاءات</td></tr>
+      </tbody></table></div>
+  </div>
+</section>
+
+<!-- 12 SAUDI SECONDARY TYPES -->
+<section class="slide" data-title="المصادر الثانوية في السياق السعودي" data-sec="رابعاً · المصادر الثانوية">
+  <div class="inner">
+    <div><div class="eyebrow">رابعاً · الأنواع التفصيلية للمصادر الثانوية</div><h2 class="st">المصادر الثانوية في البحث التربوي والقيادي السعودي</h2></div>
+    <div class="grid g2">
+      <div class="card"><span class="tag">أ. الوثائق والسجلات الرسمية</span><p>اللوائح والخطط المدرسية، سجلات الإنجاز، دفاتر الدرجات والغياب، محاضر مجالس المعلمين، تقارير المشرفين التربويين؛ مصدر ثري لدراسة الاتجاهات عبر الزمن ومقارنة الأداء.</p></div>
+      <div class="card"><span class="tag">ب. التقارير والإحصاءات الوطنية</span><p>بيانات هيئة تقويم التعليم والتدريب: «نافس» (القراءة والرياضيات والعلوم للمرحلتين الابتدائية والمتوسطة)، و«القدرات» و«التحصيلي» للثانوية <span class="cite">هيئة تقويم التعليم والتدريب، 2024</span>؛ وتقارير نظام «نور» ومنصة «مدرستي».</p></div>
+      <div class="card"><span class="tag">ج. قواعد البيانات والأدبيات الأكاديمية</span><p>الرسائل الجامعية والأبحاث المحكّمة عبر قواعد البيانات العربية المفهرسة؛ لبناء الإطار النظري، والتحليل الثانوي، والتحليل التجميعي <span class="en">(Meta-Analysis)</span>.</p></div>
+      <div class="card"><span class="tag">د. المصادر التاريخية</span><p>المراسلات الرسمية، المخطوطات، الصحف والمجلات التاريخية، المراسيم والأنظمة التعليمية السابقة؛ لتتبع تطور النظام التعليمي والسياسات والمناهج.</p></div>
+    </div>
+    <div class="tbl-wrap"><table>
+      <caption>جدول (6): الأنواع التفصيلية للمصادر الثانوية في السياق السعودي وأمثلة تطبيقية</caption>
+      <thead><tr><th>نوع المصدر الثانوي</th><th>أمثلة سعودية محددة</th><th>الاستخدام البحثي النموذجي</th></tr></thead>
+      <tbody>
+        <tr><th>وثائق وسجلات رسمية</th><td>اللوائح والخطط المدرسية، سجلات الإنجاز، محاضر المجالس</td><td>دراسة الاتجاهات، مقارنة الأداء عبر الزمن</td></tr>
+        <tr><th>تقارير وإحصاءات وطنية</th><td>نافس، القدرات، التحصيلي، نظام نور، منصة مدرستي</td><td>تحليل السياسات الوطنية وأنماط التعلم الإلكتروني</td></tr>
+        <tr><th>قواعد بيانات وأدبيات أكاديمية</th><td>دار المنظومة (EduSearch)، شمعة، المنهل، الكشاف العربي</td><td>الإطار النظري، التحليل الثانوي، التحليل التجميعي</td></tr>
+        <tr><th>مصادر تاريخية</th><td>مراسلات ومراسيم تعليمية، صحف ومجلات قديمة</td><td>البحث التاريخي التربوي وتتبع تطور السياسات والمناهج</td></tr>
+      </tbody></table></div>
+  </div>
+</section>
+
+<!-- 13 EVIDENCE -->
+<section class="slide" data-title="توثيق علمي: نافس ومدرستي وقواعد البيانات" data-sec="رابعاً · المصادر الثانوية">
+  <div class="inner">
+    <div><div class="eyebrow">رابعاً · توثيق علمي للاستخدام</div><h2 class="st">ليس افتراضًا نظريًا: دراسات سعودية محكّمة وظّفت هذه المصادر</h2></div>
+    <div class="grid g2">
+      <div class="card"><span class="tag gold">منصة «مدرستي»</span><h3>باقعر وحداد (2023)</h3><p>وظّفت بيانات تطبيق منصة مدرستي لقياس أثرها على التميز المؤسسي في مدارس المرحلة الثانوية بجدة.</p><p class="cite" style="font-size:.84em">المجلة العربية للآداب والدراسات الإنسانية، 7(27)، 51–106</p><a class="en" href="https://doi.org/10.21608/ajahs.2023.307805" target="_blank" rel="noopener">doi.org/10.21608/ajahs.2023.307805</a></div>
+      <div class="card"><span class="tag gold">الاختبارات الوطنية «نافس»</span><h3>المهندي وآخرون (2024)</h3><p>وظّفت نتائج نافس مصدرًا لتحليل أسباب تدني تحصيل الطلاب من وجهة نظر المعلمات في المرحلتين الابتدائية والمتوسطة.</p><p class="cite" style="font-size:.84em">مجلة الآداب والعلوم الإنسانية والاجتماعية، (107)، 151–175</p><a class="en" href="https://doi.org/10.33193/JALHSS.107.2024.1144" target="_blank" rel="noopener">doi.org/10.33193/JALHSS.107.2024.1144</a></div>
+    </div>
+    <div class="card">
+      <h3>المنصات والبيانات الوطنية</h3>
+      <div class="chips"><span class="chip">نافس — هيئة تقويم التعليم والتدريب</span><span class="chip">القدرات</span><span class="chip">التحصيلي</span><span class="chip">تقارير نظام نور</span><span class="chip">منصة مدرستي</span></div>
+    </div>
+    <div class="card">
+      <h3>قواعد البيانات العربية المعتمدة أكاديميًا</h3>
+      <div class="grid g4">
+        <div class="plain"><b>دار المنظومة</b> <span class="en">EduSearch</span></div>
+        <div class="plain"><b>شمعة</b> <span class="en">Shamaa</span><br><span class="cite" style="font-size:.84em">للأبحاث التربوية</span></div>
+        <div class="plain"><b>المنهل</b></div>
+        <div class="plain"><b>الكشاف العربي</b> <span class="en">ARCIF</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 14 CRITICISM -->
+<section class="slide" data-title="نقد الوثائق: الخارجي والداخلي" data-sec="رابعاً · منهجية نقد الوثائق">
+  <div class="inner">
+    <div><div class="eyebrow">رابعاً · منهجية نقد وفحص الوثائق</div><h2 class="st">من «جمع المعلومات» إلى نقدها: الأصالة أولًا، ثم المصداقية</h2>
+    <p class="lede">لا يكفي الحصول على المصدر الثانوي؛ بل يُخضعه الباحث لنقد منهجي دقيق قبل الاعتماد عليه <span class="cite">جابر وكاظم، 1978؛ العساف، 2006</span></p></div>
+    <div class="tabs" data-tabs>
+      <div class="tablist" role="tablist" aria-label="نوعا النقد">
+        <button role="tab" aria-selected="true" data-tab="c1">النقد الخارجي <small>الأصالة</small></button>
+        <button role="tab" aria-selected="false" data-tab="c2">النقد الداخلي <small>المصداقية</small></button>
+        <button role="tab" aria-selected="false" data-tab="c3">المقارنة الكاملة</button>
+      </div>
+      <div role="tabpanel" data-panel="c1" class="grid g2">
+        <div class="card"><span class="en">External Criticism · Authenticity</span><h3>هل الوثيقة أصلية؟</h3><p>التحقق من أنها ليست مزيفة أو محرّفة أو منتحلة، وأنها تعود فعلًا إلى المؤلف والزمان والمكان المنسوبة إليه: من كتبها؟ متى؟ أين؟ أصلية أم صورة معدّلة؟</p></div>
+        <div class="card"><h3>إجراءاته</h3><ul class="clean"><li>فحص خط اليد أو نوع الطباعة والخامة (الورق، الحبر).</li><li>مطابقة الأسلوب اللغوي والمصطلحات مع العصر المنسوبة إليه.</li><li>التحقق من مصدر الوثيقة وسلسلة حفظها <span class="en">(Provenance)</span> وسلامة إسنادها للجهة المُصدرة.</li></ul></div>
+      </div>
+      <div role="tabpanel" data-panel="c2" class="grid g2" hidden>
+        <div class="card"><span class="en">Internal Criticism · Credibility</span><h3>هل مضمونها صادق ودقيق؟</h3><p>بعد التأكد من الأصالة، يُفحص صدق المعلومات ودقتها، بفحص المعنى الظاهر (الحرفي) والمعنى المستتر (التأويلي) للنص.</p></div>
+        <div class="card"><h3>إجراءاته</h3><ul class="clean"><li>قدرة الكاتب على معرفة الحقيقة: شاهد عيان أم ناقل؟</li><li>صدقه ونزاهته وعدم تحيّزه (احتمالية المصلحة الشخصية).</li><li>فهم المعنى الظاهر ثم تأويل المستتر في سياقه الاجتماعي والتاريخي.</li><li>المطابقة بمصادر مستقلة <span class="en">(Corroboration)</span>.</li></ul></div>
+      </div>
+      <div role="tabpanel" data-panel="c3" hidden>
+        <div class="tbl-wrap"><table>
+          <caption>جدول (7): مقارنة بين النقد الخارجي والنقد الداخلي للوثائق</caption>
+          <thead><tr><th>وجه المقارنة</th><th>النقد الخارجي (الأصالة)</th><th>النقد الداخلي (المصداقية)</th></tr></thead>
+          <tbody>
+            <tr><th>الهدف الأساسي</th><td>التحقق من أن الوثيقة أصلية وليست مزيفة</td><td>التحقق من صدق ودقة المعلومات الواردة فيها</td></tr>
+            <tr><th>الأسئلة المحورية</th><td>من كتبها؟ متى؟ أين؟ هل هي أصلية؟</td><td>هل الكاتب صادق وقادر على معرفة الحقيقة؟ وما معناها الظاهر والمستتر؟</td></tr>
+            <tr><th>الأدوات المستخدمة</th><td>فحص الخط، الخامة، الأسلوب، سلسلة الحفظ</td><td>المقارنة بمصادر أخرى، تحليل دوافع الكاتب، تأويل النص</td></tr>
+            <tr><th>النتيجة المرجوة</th><td>الحكم بأصالة الوثيقة أو زيفها</td><td>الحكم بموثوقية مضمونها أو تحيّزه</td></tr>
+          </tbody></table></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 15 FOUR CRITERIA -->
+<section class="slide" data-title="المعايير الإجرائية الأربعة لجودة المصدر" data-sec="رابعاً · معايير الجودة">
+  <div class="inner">
+    <div><div class="eyebrow">رابعاً · معايير عملية للحكم على جودة المصدر الثانوي</div><h2 class="st">أربعة معايير قبل اعتماد أي مصدر ثانوي</h2>
+    <p class="lede">تلتقي مع مبادئ النقد المنهجي، وتُصاغ إجرائيًا لتلائم المصادر الرقمية والمؤسسية المعاصرة <span class="cite">العساف، 2006؛ أبو علام، 2011</span>. جرّبوا فحص مصدر بتحديد المعايير المتحققة:</p></div>
+    <div class="grid g2">
+      <label class="card check" for="k1"><input type="checkbox" id="k1" class="crit"><span><h3>جهة الإصدار <span class="en">Authority</span></h3>صدر عن جهة رسمية معترف بها (كهيئة تقويم التعليم والتدريب) أو ناشر أكاديمي أو قاعدة مفهرسة (دار المنظومة، شمعة)؟</span></label>
+      <label class="card check" for="k2"><input type="checkbox" id="k2" class="crit"><span><h3>الحداثة <span class="en">Currency</span></h3>تاريخ البيانات ملائم لسؤال البحث؟ فبيانات تعود لعقد مضى قد لا تصلح لدراسة واقع راهن دون تبرير منهجي.</span></label>
+      <label class="card check" for="k3"><input type="checkbox" id="k3" class="crit"><span><h3>الغرض <span class="en">Purpose</span></h3>جُمعت لغرض إداري أو إحصائي محايد (كسجلات نور)، لا لغرض ترويجي أو دعائي قد يحمل تحيزًا؟</span></label>
+      <label class="card check" for="k4"><input type="checkbox" id="k4" class="crit"><span><h3>الدقة وقابلية التحقق <span class="en">Accuracy</span></h3>يمكن مطابقة بياناته بمصادر مستقلة <span class="en">(Corroboration)</span>، ويوثّق منهجيته في الجمع؟</span></label>
+    </div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap"><b id="crit-verdict" style="color:var(--green-deep)">لم يُفحص المصدر بعد</b><span id="crit-count" style="font-variant-numeric:tabular-nums;color:var(--muted)">0 / 4</span></div>
+      <div class="meter" aria-hidden="true"><i id="crit-bar"></i></div>
+      <p class="cite" style="font-size:.84em">بتطبيق المعايير الأربعة مع النقد الخارجي والداخلي يُخضَع المصدر لتمحيص شامل، بدلًا من الاكتفاء بتوافره أو سهولة الوصول إليه.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 16 CASE STUDY -->
+<section class="slide" data-title="مصفوفة التطبيق التربوي المتكامل" data-sec="خامساً · تطبيق تربوي">
+  <div class="inner">
+    <div><div class="eyebrow">خامساً · تطبيق تربوي متكامل</div><h2 class="st">أثر التعلم الممزوج على التحصيل: الدافعية وسيطًا، والجنس معدِّلًا</h2>
+    <p class="lede">دراسة على طلاب المرحلة المتوسطة، مع ضبط التحصيل القبلي بتحليل التباين المشترك (ANCOVA).</p></div>
+    <figure class="diag">
+      <svg viewBox="0 0 760 270" role="img" aria-label="نموذج الدراسة: التعلم الممزوج يؤثر في التحصيل عبر الدافعية، والجنس معدل، والتحصيل القبلي مصاحب">
+        <defs>
+          <marker id="m1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#0F5338"/></marker>
+          <marker id="m2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#C59B27"/></marker>
+          <marker id="m3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#1A365D"/></marker>
+        </defs>
+        <g font-family="IBM Plex Sans Arabic, sans-serif" text-anchor="middle">
+          <rect x="570" y="112" width="170" height="56" rx="9" fill="#0F5338"/>
+          <text x="655" y="136" font-size="15" font-weight="700" fill="#FFFFFF">التعلم الممزوج</text>
+          <text x="655" y="156" font-size="12" fill="#CFE0D5">مستقل · اسمي · نشط</text>
+          <rect x="20" y="112" width="170" height="56" rx="9" fill="#0F5338"/>
+          <text x="105" y="136" font-size="15" font-weight="700" fill="#FFFFFF">التحصيل الدراسي</text>
+          <text x="105" y="156" font-size="12" fill="#CFE0D5">تابع · فئوي متصل</text>
+          <rect x="295" y="14" width="170" height="56" rx="9" fill="#E7F0EA" stroke="#0F5338"/>
+          <text x="380" y="38" font-size="15" font-weight="700" fill="#0B3F2A">الدافعية للتعلم</text>
+          <text x="380" y="58" font-size="12" fill="#56675D">وسيط · فئوي متصل</text>
+          <rect x="295" y="200" width="170" height="56" rx="9" fill="#FBF4E0" stroke="#C59B27"/>
+          <text x="380" y="224" font-size="15" font-weight="700" fill="#8A6A12">الجنس</text>
+          <text x="380" y="244" font-size="12" fill="#8A6A12">معدِّل · اسمي · سماتي</text>
+          <rect x="20" y="214" width="190" height="46" rx="9" fill="#E8EEF6" stroke="#1A365D" stroke-dasharray="5 3"/>
+          <text x="115" y="235" font-size="13" font-weight="700" fill="#1A365D">التحصيل القبلي (دخيل)</text>
+          <text x="115" y="252" font-size="11" fill="#1A365D">يُضبط بـ ANCOVA</text>
+        </g>
+        <path d="M600 110L462 64" stroke="#0F5338" stroke-width="2.2" fill="none" marker-end="url(#m1)"/>
+        <path d="M298 64L160 110" stroke="#0F5338" stroke-width="2.2" fill="none" marker-end="url(#m1)"/>
+        <path d="M566 140L194 140" stroke="#0F5338" stroke-width="2.2" fill="none" marker-end="url(#m1)"/>
+        <path d="M380 198L380 146" stroke="#C59B27" stroke-width="2.2" fill="none" marker-end="url(#m2)"/>
+        <path d="M105 212L105 172" stroke="#1A365D" stroke-width="1.8" stroke-dasharray="5 4" fill="none" marker-end="url(#m3)"/>
+      </svg>
+      <figcaption>مسار الوساطة (أعلى) · الأثر المباشر (وسط) · التفاعل مع الجنس (أسفل) · المتغير المصاحب (يسار)</figcaption>
+    </figure>
+    <div class="tbl-wrap"><table>
+      <caption>جدول (8): تطبيق تربوي شامل — تصنيف المتغيرات، وطرق ضبطها، ومصادر جمع بياناتها</caption>
+      <thead><tr><th>المتغير</th><th>حسب الدور</th><th>حسب القياس</th><th>حسب التحكم</th><th>مصدر جمع البيانات</th></tr></thead>
+      <tbody>
+        <tr><th>التعلم الممزوج</th><td>مستقل</td><td>اسمي (يوجد/لا يوجد)</td><td>نشط/تجريبي</td><td>أولي — تصميم تجريبي</td></tr>
+        <tr><th>الدافعية للتعلم</th><td>وسيط/شارح</td><td>فئوي متصل (مقياس)</td><td>تصنيفي/سماتي</td><td>أولي — مقياس دافعية (استبانة)</td></tr>
+        <tr><th>الجنس</th><td>معدِّل</td><td>اسمي</td><td>تصنيفي/سماتي</td><td>أولي — بيانات ديموغرافية</td></tr>
+        <tr><th>التحصيل الدراسي</th><td>تابع</td><td>فئوي متصل</td><td>—</td><td>أولي — اختبار تحصيلي / ثانوي — سجلات نور</td></tr>
+        <tr><th>المستوى الاقتصادي للأسرة</th><td>ضابط/مقيَّد</td><td>رتبي</td><td>تصنيفي/سماتي</td><td>ثانوي — سجلات مدرسية / استبانة</td></tr>
+        <tr><th>التحصيل القبلي (دخيل)</th><td>دخيل — يُضبط بـ ANCOVA</td><td>فئوي متصل</td><td>تصنيفي/سماتي</td><td>ثانوي — سجلات الدرجات (نور)</td></tr>
+      </tbody></table></div>
+    <p class="lede">المتغيرات القابلة للتحكم التجريبي تستلزم مصادر أولية وتصميمًا تجريبيًا، بينما تُستثمر المصادر الثانوية الرسمية (سجلات نور) لقياس بعض المتغيرات التابعة أو الدخيلة دون إعادة جمعها من الصفر.</p>
+  </div>
+</section>
+
+<!-- 17 CLASSIFIER -->
+<section class="slide" data-title="محاكي تصنيف المتغيرات" data-sec="أداة تدريبية تفاعلية">
+  <div class="inner">
+    <div><div class="eyebrow">أداة تدريبية تفاعلية</div><h2 class="st">محاكي تصنيف المتغيرات</h2>
+    <p class="lede">حدّدوا دور المتغير ومستوى قياسه وطبيعة التحكم فيه، ليظهر الأسلوب الإحصائي المقترح والتصميم الملائم ومصدر البيانات المناسب.</p></div>
+    <div class="clf">
+      <div class="card">
+        <div class="field"><span class="cite" style="font-size:.8em">أمثلة جاهزة من جدول (8):</span>
+          <div class="presets" id="presets">
+            <button data-p="ind,nom,act,التعلم الممزوج">التعلم الممزوج</button>
+            <button data-p="med,int,att,الدافعية للتعلم">الدافعية</button>
+            <button data-p="mod,nom,att,الجنس">الجنس</button>
+            <button data-p="dep,int,att,التحصيل الدراسي">التحصيل</button>
+            <button data-p="ctl,ord,att,المستوى الاقتصادي">المستوى الاقتصادي</button>
+            <button data-p="ext,int,att,التحصيل القبلي">التحصيل القبلي</button>
+          </div></div>
+        <div class="field"><label for="cl-name">اسم المتغير</label><input id="cl-name" type="text" value="التعلم الممزوج" style="border:1px solid var(--green-line);border-radius:8px;padding:8px 12px;background:var(--card);color:var(--ink)"></div>
+        <div class="field"><label for="cl-role">الدور الوظيفي</label>
+          <select id="cl-role"><option value="ind">مستقل</option><option value="dep">تابع</option><option value="ctl">ضابط / مقيَّد</option><option value="ext">دخيل</option><option value="med">وسيط / شارح</option><option value="mod">معدِّل</option></select></div>
+        <div class="field"><label for="cl-level">مستوى القياس</label>
+          <select id="cl-level"><option value="nom">اسمي</option><option value="ord">رتبي</option><option value="int">فئوي</option><option value="rat">نسبي</option></select></div>
+        <div class="field"><label for="cl-nat">طبيعة التحكم</label>
+          <select id="cl-nat"><option value="act">نشط / تجريبي</option><option value="att">تصنيفي / سماتي</option></select></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="chips" id="clf-badges"></div>
+        <div class="out">
+          <div class="card hl"><span class="k">الأسلوب الإحصائي المقترح</span><span class="v" id="o-stat"></span></div>
+          <div class="card"><span class="k">الإحصاء الوصفي حسب مستوى القياس</span><span class="v" id="o-desc"></span></div>
+          <div class="card"><span class="k">التصميم البحثي الملائم</span><span class="v" id="o-design"></span></div>
+          <div class="card"><span class="k">مصدر البيانات المناسب</span><span class="v" id="o-src"></span></div>
+        </div>
+        <div class="warnbox" id="o-warn" hidden></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 18 CONCLUSION -->
+<section class="slide" data-title="الخاتمة والتوصيات المنهجية" data-sec="سادساً · الخاتمة">
+  <div class="inner">
+    <div><div class="eyebrow">سادساً · الخاتمة</div><h2 class="st">المتغيرات لا تُختزل في «مستقل – تابع – ضابط»، والمصادر لا تُختزل في الاستبانة</h2></div>
+    <div class="grid g2">
+      <div class="card"><h3>أبرز الخلاصات</h3><ul class="clean">
+        <li>ثلاث زوايا تصنيف متكاملة: الدور (بما فيه الدخيل والوسيط والمعدِّل)، ومستوى القياس (اسمي، رتبي، فئوي، نسبي)، والتحكم (نشط أو سماتي).</li>
+        <li>التمييز بين الدخيل والمعدِّل والوسيط شرط جوهري لاختيار الأسلوب الإحصائي الصحيح وصون الصدق الداخلي.</li>
+        <li>ضبط الدخيل إحصائيًا (ANCOVA) ومنهجيًا (العشوائية، التثبيت، المتناظرة).</li>
+        <li>مصادر ثانوية سعودية غنية (نور، مدرستي، نافس، دار المنظومة، شمعة) موثّق استخدامها في دراسات محكّمة <span class="cite">باقعر وحداد، 2023؛ المهندي وآخرون، 2024</span></li>
+      </ul></div>
+      <div class="card"><h3>توصيات منهجية لباحثي الدراسات العليا</h3><ul class="clean">
+        <li>حدّد كل متغير من الزوايا الثلاث مجتمعة.</li>
+        <li>اربط بوضوح بين المتغيرات وأسئلة البحث وفروضه وتصميمه.</li>
+        <li>اختر إجراء الضبط الملائم لكل متغير دخيل محتمل.</li>
+        <li>اختر مصدر البيانات (أوليًا أم ثانويًا) بما يناسب طبيعة كل متغير.</li>
+        <li>أخضع كل مصدر ثانوي للنقد الخارجي والداخلي وللمعايير الأربعة (جهة الإصدار، الحداثة، الغرض، الدقة).</li>
+      </ul></div>
+    </div>
+    <div class="note"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#C59B27"/><path d="M7 12.5l3.2 3.2L17 9" stroke="#fff" stroke-width="2.2" fill="none"/></svg><p>تحقيقًا للموضوعية والأمانة العلمية في جمع البيانات وتفسيرها.</p></div>
+  </div>
+</section>
+
+<!-- 19 REFERENCES -->
+<section class="slide" data-title="قائمة المراجع (APA 7)" data-sec="المراجع">
+  <div class="inner">
+    <div><div class="eyebrow">قائمة المراجع · APA 7th Edition</div><h2 class="st">المراجع</h2></div>
+    <div class="card refs">
+      <h3>أولًا: المراجع العربية</h3>
+      <p>أبو حطب، فؤاد عبد اللطيف، وصادق، آمال أحمد مختار. (2010). <i>مناهج البحث وطرق التحليل الإحصائي في العلوم النفسية والتربوية والاجتماعية</i> (ط. 1). مكتبة الأنجلو المصرية.</p>
+      <p>أبو علام، رجاء محمود. (2011). <i>مناهج البحث في العلوم النفسية والتربوية</i> (ط. 7). دار النشر للجامعات.</p>
+      <p>العساف، صالح بن حمد. (2006). <i>المدخل إلى البحث في العلوم السلوكية</i> (ط. 4). مكتبة العبيكان.</p>
+      <p>القحطاني، سالم بن سعيد آل ناصر، العامري، أحمد بن سالم، آل مذهب، معدّي بن محمد، والعمر، بدران بن عبد الرحمن. (2020). <i>منهج البحث في العلوم السلوكية: مع تطبيقات على SPSS</i>. العبيكان للنشر.</p>
+      <p>المهندي، ريم، اليامي، هادية، الخلف، بندري، الرشيد، بدرية، والمطيري، أنصاف. (2024). أسباب تدني نتائج طلاب وطالبات المرحلتين الابتدائية والمتوسطة في الاختبارات الوطنية (نافس) من وجهة نظر المعلمات. <i>مجلة الآداب والعلوم الإنسانية والاجتماعية</i>، (107)، 151-175. <a href="https://doi.org/10.33193/JALHSS.107.2024.1144" target="_blank" rel="noopener">https://doi.org/10.33193/JALHSS.107.2024.1144</a></p>
+      <p>باقعر، أحمد عوض سليمان، وحداد، محمد عبد الكريم بخاري. (2023). دور تطبيق منصة مدرستي على التميز المؤسسي بمدارس المرحلة الثانوية بجدة. <i>المجلة العربية للآداب والدراسات الإنسانية، 7</i>(27)، 51-106. <a href="https://doi.org/10.21608/ajahs.2023.307805" target="_blank" rel="noopener">https://doi.org/10.21608/ajahs.2023.307805</a></p>
+      <p>جابر، جابر عبد الحميد، وكاظم، أحمد خيري. (1978). <i>مناهج البحث في التربية وعلم النفس</i> (ط. 2). دار النهضة العربية.</p>
+      <p>عبيدات، ذوقان، عدس، عبد الرحمن، وعبد الحق، كايد. (2015). <i>البحث العلمي: مفهومه وأدواته وأساليبه</i> (ط. 17). دار الفكر.</p>
+      <p>ملحم، سامي محمد. (2000). <i>مناهج البحث في التربية وعلم النفس</i> (ط. 1). دار المسيرة للنشر والتوزيع والطباعة.</p>
+      <p>هيئة تقويم التعليم والتدريب. (2024، 1 مايو). هيئة تقويم التعليم والتدريب تعلن عن إطلاق الاختبارات الوطنية (نافس) في جميع مدارس المملكة الابتدائية والمتوسطة. <i>وكالة الأنباء السعودية (واس)</i>. <a href="https://www.spa.gov.sa/N2094324" target="_blank" rel="noopener">https://www.spa.gov.sa/N2094324</a></p>
+      <h3 style="margin-top:8px">ثانيًا: المراجع الأجنبية</h3>
+      <p class="ltr" dir="ltr">Creswell, J. W., &amp; Guetterman, T. C. (2024). <i>Educational research: Planning, conducting, and evaluating quantitative and qualitative research</i> (7th ed.). Pearson.</p>
+      <p class="ltr" dir="ltr">Fraenkel, J. R., Wallen, N. E., &amp; Hyun, H. H. (2019). <i>How to design and evaluate research in education</i> (10th ed.). McGraw-Hill Education.</p>
+    </div>
+  </div>
+</section>
+
+  </main>
+
+  <footer class="controls">
+    <div class="progress" id="progress"></div>
+    <button class="nav-btn" id="prev" aria-label="الشريحة السابقة">
+      <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M5 2l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2"/></svg>السابق</button>
+    <span class="counter" id="counter">1 / 19</span>
+    <span class="cur-title" id="cur-title"></span>
+    <span class="kbd-hint">الأسهم للتنقل · G للفهرس · F لملء الشاشة</span>
+    <button class="nav-btn primary" id="next" aria-label="الشريحة التالية">التالي
+      <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M9 2L4 7l5 5" fill="none" stroke="currentColor" stroke-width="2"/></svg></button>
+  </footer>
+
+  <div class="overlay" id="overlay" hidden role="dialog" aria-modal="true" aria-labelledby="idx-title">
+    <div class="panel">
+      <div class="panel-head"><h2 id="idx-title">فهرس المحاور</h2><button class="nav-btn" id="idx-close">إغلاق</button></div>
+      <div class="idx" id="idx"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const slides=[...document.querySelectorAll('.slide')];
+  const total=slides.length;
+  let cur=0;
+  const $=id=>document.getElementById(id);
+  const counter=$('counter'),progress=$('progress'),curTitle=$('cur-title'),prev=$('prev'),next=$('next');
+  const toAr=n=>String(n);
+
+  function go(i){
+    i=Math.max(0,Math.min(total-1,i));
+    slides[cur].classList.remove('active');
+    cur=i;
+    const s=slides[cur];
+    s.classList.add('active');s.scrollTop=0;
+    counter.textContent=toAr(cur+1)+' / '+toAr(total);
+    progress.style.width=((cur+1)/total*100)+'%';
+    curTitle.textContent=s.dataset.title||'';
+    prev.disabled=cur===0;next.disabled=cur===total-1;
+    try{history.replaceState(null,'','#s'+(cur+1));}catch(e){}
+    document.querySelectorAll('#idx button').forEach((b,k)=>b.setAttribute('aria-current',k===cur?'true':'false'));
+  }
+  prev.addEventListener('click',()=>go(cur-1));
+  next.addEventListener('click',()=>go(cur+1));
+
+  // index
+  const idx=$('idx'),overlay=$('overlay');
+  slides.forEach((s,k)=>{
+    const b=document.createElement('button');
+    b.innerHTML='<span class="n">'+(k+1)+'</span><span><span class="sec"></span><span class="t"></span></span>';
+    b.querySelector('.sec').textContent=s.dataset.sec||'';
+    b.querySelector('.t').textContent=s.dataset.title||'';
+    b.addEventListener('click',()=>{go(k);closeIdx();});
+    idx.appendChild(b);
+  });
+  function openIdx(){overlay.hidden=false;(idx.querySelector('[aria-current=true]')||idx.firstChild).focus();}
+  function closeIdx(){overlay.hidden=true;$('btn-index').focus();}
+  $('btn-index').addEventListener('click',openIdx);
+  $('idx-close').addEventListener('click',closeIdx);
+  overlay.addEventListener('click',e=>{if(e.target===overlay)closeIdx();});
+
+  // fullscreen
+  function toggleFs(){
+    try{
+      if(document.fullscreenElement){document.exitFullscreen().catch(()=>{});}
+      else{const p=document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();if(p&&p.catch)p.catch(()=>{});}
+    }catch(e){}
+  }
+  $('btn-fs').addEventListener('click',toggleFs);
+
+  // keyboard (RTL: left arrow = next)
+  document.addEventListener('keydown',e=>{
+    const t=e.target;
+    if(t&&(t.tagName==='INPUT'||t.tagName==='SELECT'||t.tagName==='TEXTAREA'))return;
+    if(!overlay.hidden){if(e.key==='Escape')closeIdx();return;}
+    if(t&&t.getAttribute&&t.getAttribute('role')==='tab'&&(e.key==='ArrowLeft'||e.key==='ArrowRight'))return;
+    switch(e.key){
+      case 'ArrowLeft':case 'PageDown':case ' ':e.preventDefault();go(cur+1);break;
+      case 'ArrowRight':case 'PageUp':e.preventDefault();go(cur-1);break;
+      case 'Home':go(0);break;
+      case 'End':go(total-1);break;
+      case 'g':case 'G':case 'ل':openIdx();break;
+      case 'f':case 'F':case 'ب':toggleFs();break;
+    }
+  });
+
+  // swipe
+  let sx=null,sy=null;
+  $('stage').addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY;},{passive:true});
+  $('stage').addEventListener('touchend',e=>{
+    if(sx===null)return;const dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;
+    if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.5){go(dx>0?cur+1:cur-1);} sx=null;
+  },{passive:true});
+
+  // tabs
+  document.querySelectorAll('[data-tabs]').forEach(g=>{
+    const tabs=[...g.querySelectorAll(':scope > .tablist [role=tab]')];
+    const panels=[...g.querySelectorAll(':scope > [role=tabpanel]')];
+    function sel(id){
+      tabs.forEach(t=>{const on=t.dataset.tab===id;t.setAttribute('aria-selected',on);t.tabIndex=on?0:-1;});
+      panels.forEach(p=>p.hidden=p.dataset.panel!==id);
+    }
+    tabs.forEach((t,k)=>{
+      t.addEventListener('click',()=>sel(t.dataset.tab));
+      t.addEventListener('keydown',e=>{
+        if(e.key==='ArrowLeft'||e.key==='ArrowRight'){
+          e.preventDefault();const d=e.key==='ArrowLeft'?1:-1;const n=tabs[(k+d+tabs.length)%tabs.length];n.focus();sel(n.dataset.tab);
+        }
+      });
+    });
+    sel(tabs[0].dataset.tab);
+  });
+
+  // criteria checklist
+  const crits=[...document.querySelectorAll('.crit')];
+  function upd(){
+    const n=crits.filter(c=>c.checked).length;
+    $('crit-count').textContent=n+' / 4';
+    $('crit-bar').style.width=(n*25)+'%';
+    $('crit-verdict').textContent=n===0?'لم يُفحص المصدر بعد':n===4?'المصدر مستوفٍ للمعايير الأربعة — صالح للاعتماد بعد النقد الخارجي والداخلي':n>=2?'مصدر مقبول بتحفظ — يلزم تبرير منهجي للمعايير غير المتحققة':'مصدر ضعيف — يُستبعد أو يُدعَم بمصادر مستقلة';
+  }
+  crits.forEach(c=>c.addEventListener('change',upd));
+
+  // classifier
+  const roleN={ind:'مستقل',dep:'تابع',ctl:'ضابط / مقيَّد',ext:'دخيل',med:'وسيط / شارح',mod:'معدِّل'};
+  const lvl={
+    nom:{n:'اسمي',fam:'cat',d:'التكرارات والنسب المئوية، ومربع كاي (χ²)'},
+    ord:{n:'رتبي',fam:'cat',d:'الوسيط، ومعامل ارتباط سبيرمان، والاختبارات اللامعلمية'},
+    int:{n:'فئوي',fam:'num',d:'المتوسط الحسابي والانحراف المعياري'},
+    rat:{n:'نسبي',fam:'num',d:'المتوسط الحسابي والانحراف المعياري، مع إمكان النسب الحقيقية بين القيم'}
+  };
+  const natN={act:'نشط / تجريبي',att:'تصنيفي / سماتي'};
+  function classify(){
+    const r=$('cl-role').value,l=$('cl-level').value,n=$('cl-nat').value,L=lvl[l],num=L.fam==='num';
+    let stat='',design='',src='',warn=[];
+    switch(r){
+      case 'ind': stat=num?'دراسة أثره أو علاقته بالتابع بمعامل ارتباط بيرسون أو نموذج الانحدار':'تحديد مستويين أو أكثر (تجريبية/ضابطة) ومقارنة أثرها في التابع باختبار (t) لمجموعتين أو ANOVA لأكثر من مجموعتين';break;
+      case 'dep': stat=num?'محور المقارنة الإحصائية: اختبار (t) أو ANOVA بين المجموعات، أو ANCOVA عند وجود متغير مصاحب':(l==='ord'?'الاختبارات اللامعلمية ومعامل ارتباط سبيرمان':'مقارنة التكرارات بين المجموعات بمربع كاي (χ²)');break;
+      case 'ctl': stat=num?'إدخاله متغيرًا مصاحبًا (Covariate) في تحليل التباين المشترك ANCOVA':'ضبط تصميمي: عينة متجانسة فيه، أو التثبيت، أو المجموعات المتناظرة';break;
+      case 'ext': stat=num?'الضبط الإحصائي البعدي: ANCOVA بإدخاله متغيرًا مصاحبًا (Covariate)':'الضبط التصميمي القبلي: العشوائية، أو التثبيت، أو المجموعات المتناظرة';break;
+      case 'med': stat='تحليل الوساطة / تحليل المسار (Mediation / Path Analysis) لتقدير الأثر غير المباشر عبر الوسيط';break;
+      case 'mod': stat='تحليل التفاعل (Interaction) بين المستقل والمعدِّل في نموذج الانحدار أو تحليل التباين العاملي';break;
+    }
+    if(r==='dep'){design='يتحدد بطبيعة المتغير المستقل: تجريبي إن كان نشطًا، ووصفي/سببي مقارن إن كان سماتيًا';}
+    else design=n==='act'?'تجريبي أو شبه تجريبي — التعيين العشوائي على مستوياته ممكن':'وصفي أو سببي مقارن أو ارتباطي — لا يمكن التعيين العشوائي';
+    if(r==='dep') src=num?'أولي: اختبار تحصيلي بعدي صادق وثابت · أو ثانوي: سجلات الدرجات في نظام نور':'أولي: استبانة أو ملاحظة مقننة';
+    else if(n==='act') src='أولي: يُنتجه الباحث نفسه عبر المعالجة التجريبية';
+    else if(num) src='أولي: مقياس أو اختبار · أو ثانوي: سجلات نور ونتائج نافس بعد إخضاعها للنقد والمعايير الأربعة';
+    else src='أولي: بيانات ديموغرافية بالاستبانة · أو ثانوي: السجلات المدرسية ونظام نور';
+    if(r==='ind'&&n==='att')warn.push('المستقل هنا سماتي لا يمكن التلاعب به؛ فلا يصح وصف الدراسة بالتجريبية، ويُعتمد التصميم السببي المقارن.');
+    if(r==='med'&&!num)warn.push('يُفضَّل قياس الوسيط بمقياس كمي متصل (كمقياس الدافعية) ليتسنى تقدير الأثر غير المباشر بدقة.');
+    if((r==='ext'||r==='ctl')&&n==='act')warn.push('المتغير الذي يُضبط لا يُعالَج تجريبيًا عادةً؛ تحقّق: هل هو في الحقيقة مستقل ثانٍ؟');
+    if(r==='mod')warn.push('تذكير: المعدِّل موضع اهتمام يُقاس ويُحلَّل عمدًا — لا يُضبط لإزالته كما يُفعل مع الدخيل.');
+    $('o-stat').textContent=stat;$('o-desc').textContent=L.d;$('o-design').textContent=design;$('o-src').textContent=src;
+    const w=$('o-warn');w.hidden=!warn.length;w.textContent=warn.join(' ');
+    const name=$('cl-name').value.trim()||'المتغير';
+    const b=$('clf-badges');b.innerHTML='';
+    [[name,'tag'],['الدور: '+roleN[r],'tag'],['القياس: '+L.n+(num?' (كمي)':' (نوعي)'),'tag navy'],['التحكم: '+(r==='dep'?'—':natN[n]),'tag gold']].forEach(([t,c])=>{const s=document.createElement('span');s.className=c;s.textContent=t;b.appendChild(s);});
+  }
+  ['cl-role','cl-level','cl-nat'].forEach(id=>$(id).addEventListener('change',classify));
+  $('cl-name').addEventListener('input',classify);
+  document.querySelectorAll('#presets button').forEach(btn=>btn.addEventListener('click',()=>{
+    const [r,l,n,name]=btn.dataset.p.split(',');$('cl-role').value=r;$('cl-level').value=l;$('cl-nat').value=n;$('cl-name').value=name;classify();
+  }));
+  classify();
+
+  // start
+  const m=/^#s(\d+)$/.exec(location.hash||'');
+  slides[0].classList.add('active');
+  go(m?parseInt(m[1],10)-1:0);
+})();
+</script>
+
+</body>
+</html>
